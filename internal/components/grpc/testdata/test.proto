@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package main;
+
+service TestService {
+  rpc Test (Empty) returns (Count) {}
+}
+
+message Count {
+  int32 num = 1;
+}
+
+message Empty {
+}
+

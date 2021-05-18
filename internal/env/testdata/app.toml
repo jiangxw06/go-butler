@@ -1,0 +1,3 @@
+[app]
+    deploy  = "local"
+    appName = "config_path_test"
