@@ -3,7 +3,7 @@
 go-butler是一个golang微服务项目的脚手架类库。其中的common包整合了golang微服务项目常用的多种资源，data包实现了一个简单好用的缓存代理框架。
 
 
-###common包
+### common包
 
 common包实现的主要特性包括：
 - 基于配置的声明式资源管理，托管了资源的初始化和优雅关闭
@@ -111,7 +111,7 @@ http_port=8090
 }
 ```
 
-###data包
+### data包
 
 data包实现了数据缓存及持久化相关的模式和框架，包括：
 - 基于publish/subscribe模式的db数据项变更框架
