@@ -21,6 +21,7 @@ func TestMain(m *testing.M) {
     #xiaohuadasai为该topic的name
     [rocketmq.topics.xiaohuadasai]
         cluster = "test"
+		nameserver = "http://mq.tv.mycompany.com/rocketmq/nsaddr-3"
         topic = "pugc-addfans-from-activity-test-topic"
         group = "ugc-addfans-from-activity-test-consumer"
 

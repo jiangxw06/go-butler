@@ -25,11 +25,8 @@ func TestMain(m *testing.M) {
 [redis]
     poolsize = 300
     [redis.clusters.default]
-        appid = 21095
+        addrs = ["10.19.10.52:29135","10.19.17.95:31376"]
         pass = "fbf92587972f4cdf8685d27848409e19"
-    [redis.clusters.second]
-        appid = 20716
-        pass = "03efa3d51a594480a484ec36653a2178"
 `)
 
 	flag.Parse()

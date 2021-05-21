@@ -1,18 +1,13 @@
 package redis
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/jiangxw06/go-butler/internal/env"
 	_ "github.com/jiangxw06/go-butler/internal/env"
 	"github.com/jiangxw06/go-butler/internal/log"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context/ctxhttp"
-	"io/ioutil"
-	"net/http"
 	"sync"
 	"time"
 
@@ -20,16 +15,17 @@ import (
 )
 
 type (
-	addressList  []redisAddress
-	redisAddress struct {
-		IP          string `json:"ip"`
-		Master      int32  `json:"master"`
-		Persistence int32  `json:"persistence"`
-		Port        int32  `json:"port"`
-	}
+	//addressList  []redisAddress
+	//redisAddress struct {
+	//	IP          string `json:"ip"`
+	//	Master      int32  `json:"master"`
+	//	Persistence int32  `json:"persistence"`
+	//	Port        int32  `json:"port"`
+	//}
 	redisClusterConfig struct {
-		RedisUID string `mapstructure:"appid"` // 集团Redis实例ID
+		//RedisUID string `mapstructure:"appid"` // Redis实例ID
 		Password string `mapstructure:"pass"`
+		Addrs    []string
 	}
 	redisConfig struct {
 		// Default is 8.
@@ -83,8 +79,6 @@ var (
 	redisOnce sync.Once
 )
 
-const defaultGetAddressListApi = "https://www.redis-svc.com/api/redis/cluster/release?uid="
-
 func loadRedisConfig() {
 	if viper.IsSet("redis") {
 		if err := viper.UnmarshalKey("redis", &redisConf); err != nil {
@@ -117,6 +111,7 @@ func GetRedisClient(key string) (redis.UniversalClient, error) {
 		RouteByLatency:     redisConf.RouteByLatency,
 		RouteRandomly:      redisConf.RouteByLatency,
 		Password:           clusterConfig.Password,
+		Addrs:              clusterConfig.Addrs,
 		MaxRetries:         redisConf.MaxRetries,
 		DialTimeout:        time.Duration(redisConf.DialTimeout) * time.Millisecond,
 		ReadTimeout:        time.Duration(redisConf.ReadTimeout) * time.Millisecond,
@@ -126,23 +121,23 @@ func GetRedisClient(key string) (redis.UniversalClient, error) {
 		PoolTimeout:        redisConf.PoolTimeout * time.Millisecond,
 		IdleCheckFrequency: redisConf.IdleCheckFrequency * time.Second,
 	}
-	var addrs []string
-	if len(clusterConfig.RedisUID) > 0 {
-		addressList, err := getAddressList(clusterConfig.RedisUID)
-		if err != nil {
-			err := errors.Errorf("get redis-cluster address from panther error: %v", err)
-			log.SysLogger().Error(err)
-			return nil, err
-		}
-		if addressList != nil && len(*addressList) > 0 {
-			for _, address := range *addressList {
-				if len(address.IP) > 0 && address.Port > 0 && address.Master == 1 {
-					addrs = append(addrs, fmt.Sprintf("%s:%v", address.IP, address.Port))
-				}
-			}
-		}
-	}
-	clusterOptions.Addrs = addrs
+	//var addrs []string
+	//if len(clusterConfig.RedisUID) > 0 {
+	//	addressList, err := getAddressList(clusterConfig.RedisUID)
+	//	if err != nil {
+	//		err := errors.Errorf("get redis-cluster address from panther error: %v", err)
+	//		log.SysLogger().Error(err)
+	//		return nil, err
+	//	}
+	//	if addressList != nil && len(*addressList) > 0 {
+	//		for _, address := range *addressList {
+	//			if len(address.IP) > 0 && address.Port > 0 && address.Master == 1 {
+	//				addrs = append(addrs, fmt.Sprintf("%s:%v", address.IP, address.Port))
+	//			}
+	//		}
+	//	}
+	//}
+	//clusterOptions.Addrs = addrs
 	clusterClient := redis.NewClusterClient(clusterOptions)
 
 	env.AddShutdownFunc(func() error {
@@ -158,28 +153,28 @@ func GetRedisClient(key string) (redis.UniversalClient, error) {
 	return clusterClient, nil
 }
 
-func getAddressList(uid string) (*addressList, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	resp, err := ctxhttp.Get(ctx, http.DefaultClient, defaultGetAddressListApi+uid)
-	if err != nil {
-		return nil, err
-	}
-	if resp != nil {
-		defer resp.Body.Close()
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(resp.Status)
-	}
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	var respParams = &addressList{}
-	var j = jsoniter.ConfigCompatibleWithStandardLibrary
-	err = j.Unmarshal(respBody, respParams)
-	if err != nil {
-		return nil, err
-	}
-	return respParams, nil
-}
+//func getAddressList(uid string) (*addressList, error) {
+//	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+//	defer cancel()
+//	resp, err := ctxhttp.Get(ctx, http.DefaultClient, defaultGetAddressListApi+uid)
+//	if err != nil {
+//		return nil, err
+//	}
+//	if resp != nil {
+//		defer resp.Body.Close()
+//	}
+//	if resp.StatusCode != http.StatusOK {
+//		return nil, errors.New(resp.Status)
+//	}
+//	respBody, err := ioutil.ReadAll(resp.Body)
+//	if err != nil {
+//		return nil, err
+//	}
+//	var respParams = &addressList{}
+//	var j = jsoniter.ConfigCompatibleWithStandardLibrary
+//	err = j.Unmarshal(respBody, respParams)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return respParams, nil
+//}

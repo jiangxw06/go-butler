@@ -11,21 +11,20 @@ import (
 
 type (
 	rocketMQConfig struct {
-		Topics map[string]*topic
+		Topics      map[string]*topic
+		NameServers []string
 	}
 
 	topic struct {
-		Topic   string
-		Cluster string
-		Group   string
+		Topic      string
+		Cluster    string
+		NameServer string
+		Group      string
 	}
 )
 
 var (
 	rocketMQConf rocketMQConfig
-
-	//在这里增加name server
-	rocketMQCluster2NS = map[string]string{}
 
 	rocketOnce sync.Once
 )

@@ -58,7 +58,7 @@ func initRocketMQProducers() {
 		if cluster == "" {
 			continue
 		}
-		nameServer := rocketMQCluster2NS[topic.Cluster]
+		nameServer := topic.NameServer
 		p, _ := rocketmq.NewProducer(
 			producer.WithNameServerDomain(nameServer),
 			producer.WithRetry(3),

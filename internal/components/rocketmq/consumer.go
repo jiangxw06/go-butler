@@ -34,7 +34,7 @@ func (c *myConsumer) Consume(ctx context.Context, msgs ...*primitive.MessageExt)
 func StartRocketMQConsumer(name string, consumeFunc func(ctx context.Context, msg []byte) bool) {
 	rocketOnce.Do(loadRocketMQConfig)
 	topic := rocketMQConf.Topics[name]
-	nameServer := rocketMQCluster2NS[topic.Cluster]
+	nameServer := topic.NameServer
 
 	mc := &myConsumer{
 		name:        name,

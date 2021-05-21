@@ -2,13 +2,10 @@ package common
 
 import (
 	"context"
-	gin2 "github.com/jiangxw06/go-butler/internal/components/gin"
-	"github.com/jiangxw06/go-butler/internal/components/url"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
+	gin2 "github.com/jiangxw06/go-butler/internal/components/gin"
 	grpc2 "github.com/jiangxw06/go-butler/internal/components/grpc"
 	http2 "github.com/jiangxw06/go-butler/internal/components/http"
 	"github.com/jiangxw06/go-butler/internal/components/kafka"
@@ -22,6 +19,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
+	"time"
 )
 
 //CopyContext 返回一个新的context，但复制了参数ctx的requestID,startTime等字段
@@ -198,18 +196,6 @@ func GetRedisClient(key string) (redis.UniversalClient, error) {
 //若配置不存在则panic
 func MustGetRedisClient(key string) redis.UniversalClient {
 	return redis2.MustGetRedisClient(key)
-}
-
-//GetURL 获得app.toml中配置的url
-//key 路径为url.<key>
-func GetURL(name string) (string, error) {
-	return url.GetURL(name)
-}
-
-//MustGetURL 获得app.toml中配置的url，若未找到则panic
-//key 路径为url.<key>
-func MustGetURL(name string) string {
-	return url.MustGetURL(name)
 }
 
 func IsProd() bool {
